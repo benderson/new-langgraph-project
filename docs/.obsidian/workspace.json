@@ -164,6 +164,7 @@
   },
   "active": "16778cfbd72056c5",
   "lastOpenFiles": [
+    "project_documentation/scraping.md",
     "package_docs/scrapy_intro.py",
     "package_docs/langchain/README.md",
     "system_architecture/system_architecture.md",
@@ -188,7 +189,6 @@
     "package_docs/langgraph/docs/cloud/how-tos/img/studio_input.mp4",
     "package_docs/langgraph/docs/cloud/how-tos/img/studio_forks.mp4",
     "package_docs/langgraph/docs/tutorials/web-navigation/web_voyager.ipynb",
-    "package_docs/langgraph/docs/tutorials/web-navigation/mark_page.js",
     "package_docs/langgraph/docs/tutorials/langgraph-platform/local-server.md",
     "package_docs/langgraph/docs/tutorials/auth/resource_auth.md",
     "package_docs/langgraph/docs/tutorials/auth/getting_started.md",

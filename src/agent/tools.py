@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, cast
+from typing import Any, Callable, List, Optional
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import InjectedToolArg
 from typing_extensions import Annotated
@@ -7,127 +7,55 @@ from scrapy import Spider
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from markitdown import MarkItDown
-from bs4 import BeautifulSoup
 import os
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 import asyncio
-import tempfile
-import shutil
-import re
 
 from agent.configuration import Configuration
 
-class DocsSpider(Spider):
-    name = 'docs_spider'
+class SimpleSpider(Spider):
+    name = 'simple_spider'
     
-    def __init__(self, url=None, output_dir=None, page_limit=1, *args, **kwargs):
-        super(DocsSpider, self).__init__(*args, **kwargs)
+    def __init__(self, url=None, page_limit=1, *args, **kwargs):
+        super(SimpleSpider, self).__init__(*args, **kwargs)
         self.start_urls = [url]
         parsed_url = urlparse(url)
         self.allowed_domains = [parsed_url.netloc]
         self.base_path = parsed_url.path
         if not self.base_path.endswith('/'):
             self.base_path += '/'
-        self.md_converter = MarkItDown()
         self.visited_urls = set()
-        self.output_dir = output_dir
-        self.results = []
+        self.discovered_urls = []
         self.page_limit = page_limit
-        self.pages_scraped = 0
+        self.pages_discovered = 0
 
     def start_requests(self):
         for url in self.start_urls:
             yield scrapy.Request(url, dont_filter=True)
 
-    def extract_content(self, soup):
-        """Extract and clean content from HTML"""
-        # Remove script and style elements
-        for element in soup(['script', 'style']):
-            element.decompose()
-            
-        # Extract quotes
-        quotes = []
-        for quote in soup.find_all('div', class_='quote'):
-            text = quote.find('span', class_='text')
-            author = quote.find('small', class_='author')
-            tags = quote.find_all('a', class_='tag')
-            
-            if text and author:
-                quote_md = f"## {text.get_text()}\n\n"
-                quote_md += f"By {author.get_text()}\n\n"
-                if tags:
-                    quote_md += "Tags: " + ", ".join(tag.get_text() for tag in tags) + "\n\n"
-                quotes.append(quote_md)
-                
-        # Extract title
-        title = soup.title.string if soup.title else 'Untitled'
-        title = title.replace(' | Quotes to Scrape', '').strip()
-        
-        # Build markdown
-        markdown = f"# {title}\n\n"
-        markdown += "\n".join(quotes)
-        
-        return markdown
-
     def parse(self, response):
-        # Check if we've reached the page limit before processing
-        if self.page_limit is not None and self.pages_scraped >= self.page_limit:
-            self.logger.info(f"Reached page limit of {self.page_limit}")
-            raise scrapy.exceptions.CloseSpider(reason=f'Reached page limit of {self.page_limit}')
+        # Check if we've reached the page limit
+        if self.page_limit is not None and self.pages_discovered >= self.page_limit:
+            return
 
-        try:
-            # Parse HTML with BeautifulSoup
-            soup = BeautifulSoup(response.text, 'html.parser')
+        # Store the URL
+        self.discovered_urls.append(response.url)
+        self.pages_discovered += 1
             
-            # Convert to markdown
-            markdown_content = self.extract_content(soup)
-            
-            # Create relative path for file storage
-            parsed_url = urlparse(response.url)
-            relative_path = parsed_url.path.strip('/')
-            if relative_path == '':
-                relative_path = 'index'
-            # Clean path
-            relative_path = re.sub(r'[^\w\-_\.]', '_', relative_path)
-            
-            # Store result
-            result = {
-                'url': response.url,
-                'path': f"{relative_path}.md",
-                'content': markdown_content
-            }
-            self.results.append(result)
-            
-            # Save markdown file
-            if self.output_dir:
-                file_path = os.path.join(self.output_dir, f"{relative_path}.md")
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(markdown_content)
-            
-            # Increment page count after successful processing
-            self.pages_scraped += 1
-            
-            # Follow links in docs directory if we haven't reached the limit
-            if self.page_limit is None or self.pages_scraped < self.page_limit:
-                for href in response.css('a::attr(href)').getall():
-                    url = response.urljoin(href)
-                    parsed = urlparse(url)
+        # Follow links if we haven't reached the limit
+        if self.page_limit is None or self.pages_discovered < self.page_limit:
+            for href in response.css('a::attr(href)').getall():
+                url = response.urljoin(href)
+                parsed = urlparse(url)
+                
+                # Only follow links in same domain and docs path
+                if (parsed.netloc in self.allowed_domains and 
+                    parsed.path.startswith(self.base_path) and
+                    url not in self.visited_urls and
+                    not parsed.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif'))):
                     
-                    # Only follow links in same domain and docs path
-                    if (parsed.netloc in self.allowed_domains and 
-                        parsed.path.startswith(self.base_path) and
-                        url not in self.visited_urls and
-                        not parsed.path.endswith(('.css', '.js', '.png', '.jpg', '.jpeg', '.gif'))):
-                        
-                        self.visited_urls.add(url)
-                        yield scrapy.Request(url)
-                    
-        except scrapy.exceptions.CloseSpider:
-            raise  # Re-raise CloseSpider exception
-        except Exception as e:
-            self.logger.error(f"Error processing {response.url}: {str(e)}")
-            return None
+                    self.visited_urls.add(url)
+                    yield scrapy.Request(url)
 
 class ScrapingTool:
     def __init__(self):
@@ -140,6 +68,7 @@ class ScrapingTool:
             'LOG_ENABLED': True,
             'LOG_LEVEL': 'INFO'
         })
+        self.md_converter = MarkItDown()
 
     async def ainvoke(self, url: str = None, page_limit: Optional[int] = 1) -> List[dict]:
         if not url:
@@ -153,41 +82,46 @@ class ScrapingTool:
         except:
             return []
 
-        # Create temporary directory for output
-        temp_dir = tempfile.mkdtemp()
+        # Create base output directory
+        os.makedirs('src/data', exist_ok=True)
+        
+        # Create website-specific directory
+        site_title = urlparse(url).netloc.replace('.', '_')
+        output_dir = os.path.join('src/data', site_title)
+        os.makedirs(output_dir, exist_ok=True)
         
         try:
-            # Create a list to store results
-            results = []
+            # Convert URL to markdown using markitdown
+            result = self.md_converter.convert(url)
+            content = result.text_content
             
-            def spider_closed(spider):
-                nonlocal results
-                results = spider.results
-
-            # Run spider synchronously
-            process = CrawlerProcess(self.settings)
-            crawler = process.create_crawler(DocsSpider)
-            crawler.signals.connect(spider_closed, signal=scrapy.signals.spider_closed)
-            process.crawl(crawler, url=url, output_dir=temp_dir, page_limit=page_limit)
-            process.start()
+            # Add title if not present
+            if not content.startswith('# '):
+                title = url.split('/')[-1].replace('-', ' ').title() or 'Home'
+                markdown_content = f"# {title}\n\n{content}"
+            else:
+                markdown_content = content
             
-            # Move files to final location
-            for result in results:
-                temp_path = os.path.join(temp_dir, result['path'])
-                if os.path.exists(temp_path):
-                    # Create final directory
-                    os.makedirs('src/data', exist_ok=True)
-                    final_path = os.path.join('src/data', result['path'])
-                    os.makedirs(os.path.dirname(final_path), exist_ok=True)
-                    
-                    # Move file
-                    shutil.move(temp_path, final_path)
+            # Create filename from URL
+            parsed_url = urlparse(url)
+            path = parsed_url.path.strip('/').replace('/', '_') or 'index'
+            filename = f"{path}.md"
             
-            return results
+            # Save markdown file
+            file_path = os.path.join(output_dir, filename)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(markdown_content)
             
-        finally:
-            # Clean up temp directory
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            # Return result
+            return [{
+                'url': url,
+                'path': filename,
+                'content': markdown_content
+            }]
+            
+        except Exception as e:
+            print(f"Error processing {url}: {str(e)}")
+            return []
 
 async def scrape(
     query: str,
