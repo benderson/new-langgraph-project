@@ -13,6 +13,29 @@ This project implements a LangGraph-based agent system designed for web research
 - Integrates with LangSmith for monitoring and tracking
 - Current implementation includes a basic node (`my_node`) that demonstrates the graph structure
 
+### Tools System (`src/agent/tools.py`)
+- Implements web scraping capabilities using Scrapy
+- Features a custom `DocsSpider` for documentation site crawling
+- Includes markdown conversion functionality
+- Components:
+  - `DocsSpider`: Custom Scrapy spider for web crawling
+    - Configurable page limits
+    - HTML to Markdown conversion
+    - Content extraction and cleaning
+    - Navigation within allowed domains
+  - `ScrapingTool`: Management class for scraping operations
+    - Configurable crawler settings
+    - Temporary file handling
+    - Asynchronous operation
+  - `scrape` function: Main tool interface
+    - Async implementation
+    - Configurable page limits
+    - Structured output with URLs and content
+- Output Management:
+  - Stores scraped content in `src/data` directory
+  - Maintains original URL structure in file paths
+  - Converts content to Markdown format
+
 ### Configuration System (`src/agent/configuration.py`)
 - Implements a flexible configuration management system using dataclasses
 - Supports runtime configuration through `RunnableConfig`
@@ -61,6 +84,30 @@ The current graph implementation follows a simple linear flow:
 - Validates end-to-end workflows
 - Uses LangSmith's unit testing utilities
 - Ensures proper state management and transitions
+
+### Scraping Tests (`tests/test_scrape.py`)
+- Tests web scraping functionality
+- Validates:
+  - Page limit enforcement
+  - File creation and storage
+  - Data directory management
+  - URL to file path conversion
+- Includes cleanup procedures
+- Provides detailed logging of:
+  - Pages scraped
+  - File creation
+  - Error handling
+
+## Data Management
+
+### Scraping Output
+- Scraped content is stored in `src/data` directory
+- File naming preserves original URL structure
+- Content is stored in Markdown format
+- Metadata includes:
+  - Original URL
+  - Local file path
+  - Converted content
 
 ## Future Considerations
 
