@@ -1,0 +1,214 @@
+{
+  "main": {
+    "id": "fc56ec985574d679",
+    "type": "split",
+    "children": [
+      {
+        "id": "dca47d8900c6b10f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f9ad46f5a4ff3632",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "system_architecture/system_architecture.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "system_architecture"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2aa39b6ce931bb63",
+    "type": "split",
+    "children": [
+      {
+        "id": "960c445d9cc8fd85",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "16778cfbd72056c5",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "a142127ed1467544",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "6eb6867bc07a0262",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "9e240150d4a6978b",
+    "type": "split",
+    "children": [
+      {
+        "id": "9ea8896462d8b8de",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fbd6c91300c95c44",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "system_architecture/system_architecture.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for system_architecture"
+            }
+          },
+          {
+            "id": "f0d1243baf1d9ddb",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "system_architecture/system_architecture.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from system_architecture"
+            }
+          },
+          {
+            "id": "0366f39c0f778830",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "0bc01e4242aac8db",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "system_architecture/system_architecture.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of system_architecture"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "16778cfbd72056c5",
+  "lastOpenFiles": [
+    "package_docs/scrapy_intro.py",
+    "package_docs/langchain/README.md",
+    "system_architecture/system_architecture.md",
+    "package_docs/langgraph/docs/tutorials/web-navigation/img/web-voyager.excalidraw.jpg",
+    "package_docs/langgraph/docs/tutorials/usaco/img/usaco.png",
+    "package_docs/langgraph/docs/tutorials/usaco/img/diagram.png",
+    "package_docs/langgraph/docs/tutorials/usaco/img/diagram-part-2.png",
+    "package_docs/langgraph/docs/tutorials/usaco/img/diagram-part-1.png",
+    "package_docs/langgraph/docs/tutorials/usaco/img/benchmark.png",
+    "package_docs/langgraph/docs/tutorials/tot/img/tot.png",
+    "package_docs/langgraph/docs/tutorials/tnt-llm/img/tnt_llm.png",
+    "package_docs/langgraph/docs/tutorials/customer-support/img/part-4-diagram.png",
+    "package_docs/langgraph/docs/tutorials/customer-support/img/part-3-diagram.png",
+    "package_docs/langgraph/docs/cloud/reference/sdk/python_sdk_ref.md",
+    "package_docs/langgraph/docs/cloud/reference/api/openapi_control_plane.json",
+    "package_docs/langgraph/docs/cloud/reference/api/openapi.json",
+    "package_docs/langgraph/docs/cloud/reference/api/api_ref_control_plane.html",
+    "package_docs/langgraph/docs/cloud/reference/api/api_ref.md",
+    "package_docs/langgraph/docs/cloud/reference/api/api_ref.html",
+    "package_docs/langgraph/docs/cloud/how-tos/img/studio_usage.mp4",
+    "package_docs/langgraph/docs/cloud/how-tos/img/studio_threads.mp4",
+    "package_docs/langgraph/docs/cloud/how-tos/img/studio_input.mp4",
+    "package_docs/langgraph/docs/cloud/how-tos/img/studio_forks.mp4",
+    "package_docs/langgraph/docs/tutorials/web-navigation/web_voyager.ipynb",
+    "package_docs/langgraph/docs/tutorials/web-navigation/mark_page.js",
+    "package_docs/langgraph/docs/tutorials/langgraph-platform/local-server.md",
+    "package_docs/langgraph/docs/tutorials/auth/resource_auth.md",
+    "package_docs/langgraph/docs/tutorials/auth/getting_started.md",
+    "package_docs/langgraph/docs/tutorials/auth/add_auth_server.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/index.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/MULTIPLE_SUBGRAPHS.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/INVALID_GRAPH_NODE_RETURN_VALUE.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/INVALID_CONCURRENT_GRAPH_UPDATE.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/INVALID_CHAT_HISTORY.md",
+    "package_docs/langgraph/docs/troubleshooting/errors/GRAPH_RECURSION_LIMIT.md",
+    "package_docs/langgraph/docs/how-tos/auth/openapi_security.md",
+    "package_docs/langgraph/docs/how-tos/auth/custom_auth.md",
+    "package_docs/langgraph/docs/cloud/how-tos/webhooks.md",
+    "package_docs/langgraph/docs/cloud/reference/env_var.md",
+    "package_docs/langgraph/docs/cloud/reference/cli.md",
+    "package_docs/langgraph/docs/cloud/how-tos/threads_studio.md",
+    "package_docs/langgraph/docs/cloud/how-tos/test_local_deployment.md",
+    "package_docs/langgraph/docs/cloud/how-tos/test_deployment.md",
+    "package_docs/langgraph/docs/cloud/how-tos/stream_values.md",
+    "package_docs/langgraph/docs/cloud/how-tos/stream_updates.md",
+    "package_docs/langgraph/docs/cloud/how-tos/stream_multiple.md"
+  ]
+}
