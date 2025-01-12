@@ -6,35 +6,22 @@ This project implements a LangGraph-based agent system designed for web research
 
 ## Core Components
 
+### Tools System (`src/agent/tools/`)
+- Implements reusable tools for agent operations
+- Includes a powerful web scraping tool with multiple modes:
+  - Single page scraping
+  - Directory-level scraping (recursive and non-recursive)
+  - Domain-level scraping
+  - Auto-detection mode
+- Tools are integrated with LangChain's tool system
+- Supports configuration injection through RunnableConfig
+
 ### Graph System (`src/agent/graph.py`)
 - Implements a `StateGraph` based workflow system
 - Defines the core agent behavior through node functions
 - Supports asynchronous operations
 - Integrates with LangSmith for monitoring and tracking
 - Current implementation includes a basic node (`my_node`) that demonstrates the graph structure
-
-### Tools System (`src/agent/tools.py`)
-- Implements web scraping capabilities using Scrapy
-- Features a custom `DocsSpider` for documentation site crawling
-- Includes markdown conversion functionality
-- Components:
-  - `DocsSpider`: Custom Scrapy spider for web crawling
-    - Configurable page limits
-    - HTML to Markdown conversion
-    - Content extraction and cleaning
-    - Navigation within allowed domains
-  - `ScrapingTool`: Management class for scraping operations
-    - Configurable crawler settings
-    - Temporary file handling
-    - Asynchronous operation
-  - `scrape` function: Main tool interface
-    - Async implementation
-    - Configurable page limits
-    - Structured output with URLs and content
-- Output Management:
-  - Stores scraped content in `src/data` directory
-  - Maintains original URL structure in file paths
-  - Converts content to Markdown format
 
 ### Configuration System (`src/agent/configuration.py`)
 - Implements a flexible configuration management system using dataclasses
@@ -56,13 +43,22 @@ This project implements a LangGraph-based agent system designed for web research
 
 ### Graph Structure
 ```
-[__start__] → [my_node]
+[__start__] → [my_node] → [tool_nodes]
 ```
 
-The current graph implementation follows a simple linear flow:
+The current graph implementation supports:
 1. Entry point (`__start__`)
 2. Processing node (`my_node`)
-3. Result output
+3. Tool execution nodes
+   - Web scraping operations
+   - Data extraction tasks
+4. Result output
+
+### Tool Integration
+- Tools are injected into the graph via RunnableConfig
+- Supports async execution for network operations
+- Maintains state consistency during tool execution
+- Provides error handling and recovery mechanisms
 
 ### Node Implementation
 - Nodes are implemented as async functions
@@ -84,30 +80,6 @@ The current graph implementation follows a simple linear flow:
 - Validates end-to-end workflows
 - Uses LangSmith's unit testing utilities
 - Ensures proper state management and transitions
-
-### Scraping Tests (`tests/test_scrape.py`)
-- Tests web scraping functionality
-- Validates:
-  - Page limit enforcement
-  - File creation and storage
-  - Data directory management
-  - URL to file path conversion
-- Includes cleanup procedures
-- Provides detailed logging of:
-  - Pages scraped
-  - File creation
-  - Error handling
-
-## Data Management
-
-### Scraping Output
-- Scraped content is stored in `src/data` directory
-- File naming preserves original URL structure
-- Content is stored in Markdown format
-- Metadata includes:
-  - Original URL
-  - Local file path
-  - Converted content
 
 ## Future Considerations
 
@@ -142,6 +114,16 @@ The current graph implementation follows a simple linear flow:
 2. Integration tests for workflow changes
 3. Use LangSmith's testing utilities
 4. Validate configuration edge cases
+5. Test tool functionality with various inputs
+6. Validate scraping behavior across different modes
+
+### Data Management
+
+#### Scraping Output
+- Scraped content is stored in markdown format
+- Organized by domain and path structure
+- Supports HTML to Markdown conversion
+- Maintains URL references for traceability
 
 ## Deployment Considerations
 
@@ -154,6 +136,22 @@ The current graph implementation follows a simple linear flow:
 - Supports dynamic configuration through `RunnableConfig`
 - Allows for environment-specific settings
 - Enables A/B testing and experimentation
+
+## Tool Development Guidelines
+
+### Adding New Tools
+1. Implement tool logic in dedicated modules
+2. Create async function wrappers in tools.py
+3. Add configuration parameters as needed
+4. Include comprehensive error handling
+5. Document input/output specifications
+
+### Scraping Tool Best Practices
+1. Respect website terms of service
+2. Implement rate limiting
+3. Handle network errors gracefully
+4. Validate input URLs
+5. Monitor storage usage
 
 ## Documentation Standards
 

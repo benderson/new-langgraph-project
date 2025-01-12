@@ -51,7 +51,9 @@ coverage.xml
 .pytest_cache/
 cover/
 docs/package_docs/
-src/data/
+
+src/agent/tools/scraped_output/
+
 
 # Translations
 *.mo
