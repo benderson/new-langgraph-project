@@ -10,6 +10,7 @@ from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 from collections import deque
 from openai import OpenAI
+from pdfminer.high_level import extract_text
 
 def is_same_domain(base_domain: str, test_url: str) -> bool:
     """
@@ -77,7 +78,7 @@ def is_same_directory(base_url: str, test_url: str) -> bool:
     else:
         return False
 
-def convert_html_to_markdown(url: str) -> str:
+def convert_to_markdown(url: str) -> str:
     """
     Convert HTML to Markdown using html2text.
     """
@@ -95,7 +96,6 @@ def sanitize_filename(url: str) -> str:
     """
     return re.sub(r'[\\/*?:"<>|]+', '_', url)
 
-
 def scrape_and_store(url: str, output_dir: str, base_domain: str, parsed_path: str) -> None:
     """
     Scrape a single page (url) and store its content in Markdown format.
@@ -103,9 +103,9 @@ def scrape_and_store(url: str, output_dir: str, base_domain: str, parsed_path: s
     try:
         response = requests.get(url)
         response.raise_for_status()
-        #html_content = response.text
-
-        markdown_content = convert_html_to_markdown(url)
+        html_content = response.text        
+        markdown_content = convert_to_markdown(url)
+        soup = BeautifulSoup(html_content, 'html.parser')
 
         # Create output directory if it doesn't exist
         this_output_dir = os.path.join(output_dir, sanitize_filename(base_domain), sanitize_filename(parsed_path))
@@ -119,6 +119,35 @@ def scrape_and_store(url: str, output_dir: str, base_domain: str, parsed_path: s
             f.write(f"# URL: {url}\n\n")  # Optionally store the origin URL at the top
             f.write(markdown_content)
         
+        # Look for PDF links or iframes
+        pdf_links = []
+
+        # Check <iframe> for embedded PDFs
+        for iframe in soup.find_all('iframe'):
+            src = iframe.get('src')
+            if src and src.endswith('/pdf/'):  # Customize this check as needed
+                pdf_links.append(urljoin(url, src))
+
+        # Check <a> links for downloadable PDFs
+        for anchor in soup.find_all('a', href=True):
+            href = anchor['href']
+            if href.endswith('/pdf/'):  # Customize this check as needed
+                pdf_links.append(urljoin(url, href))
+
+        # Process all identified PDFs
+        for pdf_url in pdf_links:
+            print(f"Processing PDF: {pdf_url}")
+            pdf_markdown = convert_to_markdown(pdf_url)
+
+            # Save the PDF content as Markdown
+            pdf_filename = sanitize_filename(pdf_url) + ".md"
+            pdf_filepath = os.path.join(this_output_dir, pdf_filename)
+            with open(pdf_filepath, 'w', encoding='utf-8') as f:
+                f.write(pdf_markdown)
+            print(f"PDF content saved: {pdf_filepath}")
+
+
+
         print(f"Scraped and stored: {url} -> {filepath}")
     except requests.exceptions.RequestException as e:
         print(f"Failed to retrieve {url}: {e}")
@@ -153,7 +182,7 @@ def scrape_website(start_url: str, mode: str = "auto", output_dir: str = "scrape
 
     if mode == "single":
         # Just scrape the page
-        scrape_and_store(start_url, output_dir, base_domain)
+        scrape_and_store(start_url, output_dir, base_domain, path)
         return
     else:
         # BFS or DFS approach
@@ -203,7 +232,7 @@ def scrape_website(start_url: str, mode: str = "auto", output_dir: str = "scrape
 # Example usage
 if __name__ == "__main__":
     # Single Page Example
-    #scrape_website("https://langchain-ai.github.io/langgraph/tutorials/multi_agent/agent_supervisor/", mode="single")
+    scrape_website("https://modernslaveryregister.gov.au/statements/19598/", mode="single")
 
     # Directory Example
     #scrape_website("https://python.langchain.com/api_reference/langchain/", mode="recursive_directory")

@@ -4,6 +4,9 @@ from langchain_core.tools import InjectedToolArg
 from typing_extensions import Annotated
 from agent.tools.scraper import scrape_website
 from agent.configuration import Configuration
+from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import InjectedToolArg
+
 
 async def scrape_docs(
     url: str,
@@ -29,4 +32,4 @@ async def scrape_docs(
     except Exception as e:
         return f"Error scraping {url}: {str(e)}"
 
-TOOLS: List[Callable[..., Any]] = [scrape, scrape_docs]
+TOOLS: List[Callable[..., Any]] = [scrape_docs]
